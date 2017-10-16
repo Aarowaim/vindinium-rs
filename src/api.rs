@@ -1,5 +1,6 @@
-// declarations
+use std::fmt;
 
+// declarations
 pub trait Session {
 	fn new(&mut self, key: String);
 
@@ -75,9 +76,25 @@ fn partition(input: &String, length: usize) -> String {
 		.collect()
 }
 
-use std::fmt;
 impl fmt::Display for Board {
 	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
 		write!(f, "{}", partition(&self.tiles, 2 * self.size))
+	}
+}
+
+impl fmt::Display for Hero {
+	fn fmt(&self, f: &mut fmt::Formatter) -> Result<(), fmt::Error> {
+		write!(f, "{}: {}\nHP: {}\tGOLD: {}+({})", 
+			self.id, self.name, self.life, self.gold, self.mineCount)
+	}
+}
+
+impl Game {
+	pub fn leaderboard(&self) -> String {
+		format!("{}", self.heroes
+			.iter()
+			.map(|h| h.to_string())
+			.collect::<Vec<String>>()
+			.join("\n"))
 	}
 }
