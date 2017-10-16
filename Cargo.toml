@@ -1,0 +1,11 @@
+[package]
+name = "vindinium-rs"
+version = "0.1.0"
+authors = ["Aaron Lip <kitsunay34@gmail.com>"]
+
+[dependencies]
+reqwest = { git = "https://github.com/seanmonstar/reqwest" }
+serde = "*"
+serde_json = "*"
+serde_derive = "*"
+maplit = "*"
