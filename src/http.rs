@@ -40,7 +40,7 @@ impl <B: Bot> Client<B> {
 			.expect("Failed to post to vindinium server");
 
 		let mut content = String::new();
-		res.read_to_string(&mut content);
+		res.read_to_string(&mut content).expect("Received no response from the vindinium server");
 		serde_json::from_str(content.as_str()).expect("Failed to parse json response")
 	}
 }
