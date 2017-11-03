@@ -10,7 +10,7 @@ use user::Bot;
 use api::{State, Action, Session};
 
 fn reqwest_url(s: String) -> reqwest::Url {
-	reqwest::Url::parse(&s.as_str()).unwrap()
+	reqwest::Url::parse(&s.as_str()).expect(format!("Failed to connect to {}", &s).as_str())
 }
 
 pub struct Client<B: Bot> {
@@ -37,11 +37,11 @@ impl <B: Bot> Client<B> {
 		let mut res = self.client.post(path)
 			.form(&args)
 			.send()
-			.unwrap();
+			.expect("Failed to post to vindinium server");
 
 		let mut content = String::new();
 		res.read_to_string(&mut content);
-		serde_json::from_str(content.as_str()).unwrap()
+		serde_json::from_str(content.as_str()).expect("Failed to parse json response")
 	}
 }
 
@@ -57,7 +57,7 @@ impl <B: Bot> Session for Client<B> {
 			"map" => map_id.clone(),
 		};
 
-		let path = self.base_uri.join("/api/training").unwrap();
+		let path = self.base_uri.join("/api/training").expect("Failed to join urls");
 		self.post(path, args)
 	}
 
@@ -66,7 +66,7 @@ impl <B: Bot> Session for Client<B> {
 			"key" => self.key.clone(),
 		};
 
-		let path = self.base_uri.join("/api/arena").unwrap();
+		let path = self.base_uri.join("/api/arena").expect("Failed to join urls");
 		self.post(path, args);
 	}
 

@@ -24,7 +24,8 @@ struct RandomBot;
 impl Bot for RandomBot {
 	fn update(&mut self, state: &State) -> Action {
 		let actions = vec![Action::North, Action::South, Action::West, Action::East];
-		rand::thread_rng().choose(&actions).unwrap().clone()
+		rand::thread_rng().choose(&actions)
+			.expect("No values to choose in [T] provided.").clone()
 	}
 }
 
@@ -77,7 +78,7 @@ fn main() {
 use futures::{Stream, Future};
 
 fn my_test() {
-	let mut core = tokio_core::reactor::Core::new().unwrap();
+	let mut core = tokio_core::reactor::Core::new().expect("Could not instantiate reactor");
 	let handle = core.handle();
 
 	let (tx, rx) = chan::async::<String>();
@@ -88,5 +89,5 @@ fn my_test() {
 		Ok(())
 	});
 
-	core.run(incoming).unwrap()
+	core.run(incoming).expect("Could not run reactor event loop")
 }
