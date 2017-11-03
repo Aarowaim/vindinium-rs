@@ -61,6 +61,7 @@ fn main() {
 	let mut key = String::new();
 	f.read_to_string(&mut key)
 		.expect(format!("Could not read '{}'.", key_file).as_str());
+	key.trim()
 
 	let mut client = Client::new("http://vindinium.org".to_string(), 
 		key, RandomBot{});
