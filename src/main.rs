@@ -8,6 +8,10 @@ pub mod user;
 extern crate rand;
 use rand::Rng;
 
+extern crate chan;
+extern crate futures;
+extern crate tokio_core;
+
 use std::fs::File;
 use std::io::prelude::*;
 
@@ -22,6 +26,30 @@ impl Bot for RandomBot {
 		let actions = vec![Action::North, Action::South, Action::West, Action::East];
 		rand::thread_rng().choose(&actions).unwrap().clone()
 	}
+}
+
+enum Message {
+	Json(String),
+	GameState(State),
+	Output(String),
+	Terminate,
+}
+
+struct RX<T>(chan::Receiver<T>);
+impl<T> futures::stream::Stream for RX<T> {
+	type Item = T;
+	type Error = Box<std::error::Error>;
+
+	fn poll(&mut self) -> futures::Poll<Option<Self::Item>, Self::Error> {
+		let &mut RX(ref receiver) = self;
+		let item = receiver.recv();
+		match item {
+			Some(value) => Ok(futures::Async::Ready(Some(value))),
+			None => Ok(futures::Async::NotReady),
+		}
+		
+	}
+
 }
 
 fn main() {
@@ -44,6 +72,21 @@ fn main() {
 		println!("{}", content.game.leaderboard());
 		println!("{}", content.game.board);
 	}
+}
 
-	println!("{}", content.game.board);
+use futures::{Stream, Future};
+
+fn my_test() {
+	let mut core = tokio_core::reactor::Core::new().unwrap();
+	let handle = core.handle();
+
+	let (tx, rx) = chan::async::<String>();
+
+	tx.send("Hello".to_string());
+	let incoming = RX(rx).for_each(|s| {
+		println!("Result: {}", s);
+		Ok(())
+	});
+
+	core.run(incoming).unwrap()
 }

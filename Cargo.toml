@@ -10,3 +10,8 @@ serde_json = "*"
 serde_derive = "*"
 maplit = "*"
 rand = "*"
+
+futures = "*"
+tokio-io = "*"
+tokio-core = "*"
+chan = { git = "https://github.com/BurntSushi/chan" }
