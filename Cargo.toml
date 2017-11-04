@@ -14,4 +14,4 @@ rand = "*"
 futures = "*"
 tokio-io = "*"
 tokio-core = "*"
-chan = { git = "https://github.com/BurntSushi/chan" }
+multiqueue = "*"
