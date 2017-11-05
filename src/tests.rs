@@ -10,7 +10,6 @@ enum Message {
     Text(String),
 }
 
-//TODO: This will probably require a macro or callback to inject user code
 #[test]
 fn my_test() {
     let (tx, rx) = multiqueue::broadcast_fut_queue(60000);
