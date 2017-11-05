@@ -2,6 +2,9 @@ pub mod api;
 pub mod http;
 pub mod user;
 
+#[cfg(test)]
+mod tests;
+
 #[macro_use] extern crate serde_derive;
 #[macro_use] extern crate maplit;
 
@@ -11,6 +14,7 @@ use rand::Rng;
 extern crate multiqueue;
 extern crate futures;
 extern crate tokio_core;
+extern crate tokio_timer;
 
 use std::fs::File;
 use std::io::prelude::*;
@@ -59,38 +63,6 @@ fn main() {
 	}
 }
 
-use futures::{Stream, Future};
-
-fn my_test() {
-	let (tx, rx) = multiqueue::broadcast_fut_queue(60000);
-
-	for name in vec!["A", "B", "C"] {
-		my_test_receiver(tx.clone(), rx.add_stream(), name.to_string());
-	}
-	
-	let delay = std::time::Duration::from_millis(100);
-	let mut count = 0usize;
-	loop {
-		tx.try_send(format!("{} #{}", "Message", count)).expect("Failed to send");
-		std::thread::sleep(delay);
-		count += 1;
-	}
-}
-
-//TODO: This will probably require a macro or callback to inject user code
-fn my_test_receiver(send: multiqueue::BroadcastFutSender<String>, recv: multiqueue::BroadcastFutReceiver<String>, name: String) {
-	std::thread::spawn(move || {
-		let mut core = tokio_core::reactor::Core::new().expect("Could not instantiate reactor");
-		let handle = core.handle();
-
-		let incoming = recv.for_each(|s| {
-			println!("On thread '{}': {}", name, s);
-			Ok(())
-		});
-
-		core.run(incoming).expect("Could not run reactor event loop")
-	});
-}
 //TODO: Use `Service` to generate futures containing "Hello" or something
 /*fn my_test_sender(send: multiqueue::MPMCFutSender<String>, recv: multiqueue::MPMCFutReceiver<String>) {
 	std::thread::spawn(|| {
